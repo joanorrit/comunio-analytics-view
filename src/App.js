@@ -14,7 +14,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-const API_ENDPOINT = 'http://151.80.58.91:4000/public/get-round-prediction/';
+const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-round-prediction/';
 
 const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
