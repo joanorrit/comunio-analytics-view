@@ -16,10 +16,23 @@ import Typography from '@mui/material/Typography';
 
 const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-round-prediction/';
 
+const icons = {
+  "Canet Post-Messiah": "https://cdn.biwenger.com/img/user.svg",
+  "Jabatos team": "https://cdn.biwenger.com/img/user.svg",
+  "Medu": "https://cdn.biwenger.com/img/user.svg",
+  "Politzs": "https://cdn.biwenger.com/icons/29.png",
+  "UE Mero": "https://cdn.biwenger.com/img/user.svg",
+  "BLACK PANTHERS MATTER": "https://cdn.biwenger.com/icons/31.png",
+  "FC Robertlona": "https://cdn.biwenger.com/i/u/6921178.png",
+  "Lexus": "https://cdn.biwenger.com/i/u/6911458.png",
+  "Real Zamesta": "https://cdn.biwenger.com/icons/32.png",
+  "Simoncelli Jr.": "https://cdn.biwenger.com/img/user.svg",
+};
+
 const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
 
-  let currentRoundId = '3148';
+  let currentRoundId = '3152';
 
   React.useEffect(() => {
     fetch(`${API_ENDPOINT}${currentRoundId}`).
@@ -49,10 +62,10 @@ const App = () => {
                 <>
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar alt="Remy Sharp" src="https://cdn.biwenger.com/icons/34.png" />
+                    <Avatar alt="Remy Sharp" src={icons[item.username]} />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`${item.username}: ${item.score}`}
+                    primary={`${item.username === 'msg' ? 'Wait!' : item.username}: ${item.score}`}
                   />
                 </ListItem>
                 </>
