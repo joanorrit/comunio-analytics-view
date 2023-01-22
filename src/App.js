@@ -13,6 +13,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-round-prediction/';
 
@@ -32,7 +36,7 @@ const icons = {
 const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
 
-  let currentRoundId = '3152';
+  let currentRoundId = '3153';
 
   React.useEffect(() => {
     fetch(`${API_ENDPOINT}${currentRoundId}`).
@@ -51,9 +55,19 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1> La predicció de la jornada </h1>
-      <Box sx={{ margin: '50px auto', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
+    <div class="div-general-wrapper">
+        <Navbar bg="light" variant="light">
+          <Container>
+            <Navbar.Brand href="#home">Comunio Analytics</Navbar.Brand>
+            <Nav className="me-auto">
+              <Nav.Link href="#home">Home</Nav.Link>
+              <Nav.Link href="#features">Predicció</Nav.Link>
+              <Nav.Link href="#pricing">Hot Players</Nav.Link>
+            </Nav>
+          </Container>
+        </Navbar>
+      <h1 class="title-prediction"> La predicció de la jornada </h1>
+      <Box sx={{ margin: '10px auto', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
         <List>
           {
             roundPredictionArray.map(
