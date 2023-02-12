@@ -29,10 +29,53 @@ const icons = {
   "Simoncelli Jr.": "https://cdn.biwenger.com/img/user.svg",
 };
 
+const laLigaPlayers = [
+  {
+    name: 'Karim Benzema',
+    points: 34,
+    objectID: 0,
+  },
+  {
+    title: 'Lionel Messi',
+    points: 5,
+    objectID: 1,
+  },
+  {
+    title: 'Sergio Busquets',
+    points: 5,
+    objectID: 2,
+  },
+  {
+    title: 'Andres Iniesta',
+    points: 54,
+    objectID: 3,
+  },
+  {
+    title: 'Carles Puyol',
+    points: 82,
+    objectID: 10,
+  },
+];
+
+const getAsynStories = () =>
+  new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ data: { stories: laLigaPlayers } }),
+      2000
+    )
+  );
+
 const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
+  const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
 
-  let currentRoundId = '3152';
+  let currentRoundId = '3156';
+
+  React.useEffect(() => {
+    getAsynStories().then(result => {
+      setLaLigaPlayers(result.data.stories);
+    })
+  }, []);
 
   React.useEffect(() => {
     fetch(`${API_ENDPOINT}${currentRoundId}`).
@@ -41,6 +84,7 @@ const App = () => {
         setRoundPrediction(result);
     })
   }, []);
+
 
   let roundPredictionArray = [];
   for (const [key, value] of Object.entries(roundPrediction)) {
@@ -62,7 +106,9 @@ const App = () => {
                 <>
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar alt="Remy Sharp" src={icons[item.username]} />
+                    <button class="button-avatar" type="submit">
+                      <img class="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
+                    </button>
                   </ListItemAvatar>
                   <ListItemText
                     primary={`${item.username === 'msg' ? 'Wait!' : item.username}: ${item.score}`}
