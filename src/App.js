@@ -58,10 +58,20 @@ const laLigaPlayers = [
   },
 ];
 
+const initialLineUp = () => {
+  let lineUp = [];
+  for (let i=0; i<11; i++) {
+    lineUp[i] = {
+      name: 'Click image to add your player!',
+    };
+  }
+  return lineUp;
+}
+
 const getAsynStories = () =>
   new Promise((resolve) =>
     setTimeout(
-      () => resolve({ data: { stories: laLigaPlayers } }),
+      () => resolve({ data: { players: laLigaPlayers } }),
       2000
     )
   );
@@ -70,12 +80,16 @@ const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
   const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
   const [open, setOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [lineUp, setLineUp] = React.useState(initialLineUp());
+  const [currentButtonClicked, setCurrentButtonClicked] = React.useState(0);
 
   let currentRoundId = '3156';
+  
 
   React.useEffect(() => {
     getAsynStories().then(result => {
-      setLaLigaPlayers(result.data.stories);
+      setLaLigaPlayers(result.data.players);
     })
   }, []);
 
@@ -87,8 +101,25 @@ const App = () => {
     })
   }, []);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = (event) => {
+    setOpen(true);
+    setCurrentButtonClicked(event.target.id);
+  }
+  const handleClose = () => {
+    setSearchTerm('');
+    setOpen(false);
+  }
+  const handleSearch = (event) => setSearchTerm(event.target.value);
+
+  const handleLineUpUpdate = (item) => {
+    let newLineUp = lineUp;
+    console.log(currentButtonClicked);
+    newLineUp[currentButtonClicked] = {
+      name: item.name
+    };
+    setLineUp(newLineUp);
+    setOpen(false);
+  };
 
   let roundPredictionArray = [];
   for (const [key, value] of Object.entries(roundPrediction)) {
@@ -98,35 +129,39 @@ const App = () => {
     });
   }
 
+  const searchedPlayers = laLigaPlayers.filter(
+    (item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
-      <h1 className="h1-title"> Comunio Prediction </h1>
+      <h1 className="h1-title"> Predicción Comunio </h1>
       <Box sx={{ marginLeft: '200px', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
         <List>
           {
-            roundPredictionArray.map(
-              (item) => {
+            lineUp.map(
+              (item, index) => {
                 return (
                 <>
                 <ListItem>
                   <ListItemAvatar>
                     <button onClick={handleOpen} className="button-avatar" type="submit">
-                      <img className="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
-                      <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box sx={style}>
-                          <input id="search" type="text"/>
-                          <PlayersList list={laLigaPlayers}/>
-                        </Box>
-                      </Modal>
+                      <img id={index} className="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
                     </button>
+                    <Modal
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="modal-modal-title"
+                      aria-describedby="modal-modal-description"
+                    >
+                      <Box sx={style}>
+                        <input id="search" onChange={handleSearch} type="text"/>
+                        <PlayersList list={searchedPlayers} handleLineUpUpdate={handleLineUpUpdate}/>
+                      </Box>
+                    </Modal>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`${item.username === 'msg' ? 'Wait!' : item.username}: ${item.score}`}
+                    primary={item.name}
                   />
                 </ListItem>
                 </>
@@ -144,18 +179,19 @@ const PlayersList = (props) => {
   return (  
     <ul>
       {props.list.map(
-        (item) => <Item key={item.objectID} item={item}/>
+        (item) => <Item key={item.objectID} item={item} lineUpPosition={props.lineUpPosition} handleLineUpUpdate={props.handleLineUpUpdate}/>
         )
       }
     </ul>
   );
 };
 
-const Item = ({item}) => {
+const Item = ({item, lineUpPosition, handleLineUpUpdate}) => {
   return (
     <>
     <li>
       <span>{item.name}</span>
+      <button id={item.objectID} onClick={() => handleLineUpUpdate(item)}>Select</button>
     </li>
     </>
   );
