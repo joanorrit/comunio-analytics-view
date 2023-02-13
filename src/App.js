@@ -13,20 +13,21 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
 
 const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-round-prediction/';
 
-const icons = {
-  "Canet Post-Messiah": "https://cdn.biwenger.com/img/user.svg",
-  "Jabatos team": "https://cdn.biwenger.com/img/user.svg",
-  "Medu": "https://cdn.biwenger.com/img/user.svg",
-  "Politzs": "https://cdn.biwenger.com/icons/29.png",
-  "UE Mero": "https://cdn.biwenger.com/img/user.svg",
-  "BLACK PANTHERS MATTER": "https://cdn.biwenger.com/icons/31.png",
-  "FC Robertlona": "https://cdn.biwenger.com/i/u/6921178.png",
-  "Lexus": "https://cdn.biwenger.com/i/u/6911458.png",
-  "Real Zamesta": "https://cdn.biwenger.com/icons/32.png",
-  "Simoncelli Jr.": "https://cdn.biwenger.com/img/user.svg",
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
 };
 
 const laLigaPlayers = [
@@ -36,22 +37,22 @@ const laLigaPlayers = [
     objectID: 0,
   },
   {
-    title: 'Lionel Messi',
+    name: 'Lionel Messi',
     points: 5,
     objectID: 1,
   },
   {
-    title: 'Sergio Busquets',
+    name: 'Sergio Busquets',
     points: 5,
     objectID: 2,
   },
   {
-    title: 'Andres Iniesta',
+    name: 'Andres Iniesta',
     points: 54,
     objectID: 3,
   },
   {
-    title: 'Carles Puyol',
+    name: 'Carles Puyol',
     points: 82,
     objectID: 10,
   },
@@ -68,6 +69,7 @@ const getAsynStories = () =>
 const App = () => {
   const [roundPrediction, setRoundPrediction] = React.useState([])
   const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
+  const [open, setOpen] = React.useState(false);
 
   let currentRoundId = '3156';
 
@@ -85,6 +87,8 @@ const App = () => {
     })
   }, []);
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   let roundPredictionArray = [];
   for (const [key, value] of Object.entries(roundPrediction)) {
@@ -96,8 +100,8 @@ const App = () => {
 
   return (
     <div>
-      <h1> La predicció de la jornada </h1>
-      <Box sx={{ margin: '50px auto', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
+      <h1 className="h1-title"> Comunio Prediction </h1>
+      <Box sx={{ marginLeft: '200px', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
         <List>
           {
             roundPredictionArray.map(
@@ -106,8 +110,19 @@ const App = () => {
                 <>
                 <ListItem>
                   <ListItemAvatar>
-                    <button class="button-avatar" type="submit">
-                      <img class="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
+                    <button onClick={handleOpen} className="button-avatar" type="submit">
+                      <img className="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
+                      <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box sx={style}>
+                          <input id="search" type="text"/>
+                          <PlayersList list={laLigaPlayers}/>
+                        </Box>
+                      </Modal>
                     </button>
                   </ListItemAvatar>
                   <ListItemText
@@ -125,6 +140,25 @@ const App = () => {
   );
 }
 
+const PlayersList = (props) => {
+  return (  
+    <ul>
+      {props.list.map(
+        (item) => <Item key={item.objectID} item={item}/>
+        )
+      }
+    </ul>
+  );
+};
 
+const Item = ({item}) => {
+  return (
+    <>
+    <li>
+      <span>{item.name}</span>
+    </li>
+    </>
+  );
+};
 
 export default App;
