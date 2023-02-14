@@ -33,27 +33,28 @@ const style = {
 const laLigaPlayers = [
   {
     name: 'Karim Benzema',
-    points: 34,
+    biwengerId: 1027,
     objectID: 0,
   },
   {
-    name: 'Lionel Messi',
+    name: 'Borja Iglesias',
+    biwengerId: 2009,
     points: 5,
     objectID: 1,
   },
   {
-    name: 'Sergio Busquets',
-    points: 5,
+    name: 'Aleix Vidal',
+    biwengerId: 1716,
     objectID: 2,
   },
   {
-    name: 'Andres Iniesta',
-    points: 54,
+    name: 'Carvajal',
+    biwengerId: 1683,
     objectID: 3,
   },
   {
-    name: 'Carles Puyol',
-    points: 82,
+    name: 'Asensio',
+    biwengerId: 2081,
     objectID: 10,
   },
 ];
@@ -63,6 +64,7 @@ const initialLineUp = () => {
   for (let i=0; i<11; i++) {
     lineUp[i] = {
       name: 'Click image to add your player!',
+      biwengerId: null,
     };
   }
   return lineUp;
@@ -77,7 +79,6 @@ const getAsynStories = () =>
   );
 
 const App = () => {
-  const [roundPrediction, setRoundPrediction] = React.useState([])
   const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -97,7 +98,7 @@ const App = () => {
     fetch(`${API_ENDPOINT}${currentRoundId}`).
       then((response) => response.json()).
       then(result => {
-        setRoundPrediction(result);
+        // setRoundPrediction(result);
     })
   }, []);
 
@@ -113,25 +114,28 @@ const App = () => {
 
   const handleLineUpUpdate = (item) => {
     let newLineUp = lineUp;
-    console.log(currentButtonClicked);
     newLineUp[currentButtonClicked] = {
-      name: item.name
+      name: item.name,
+      biwengerId: item.biwengerId,
     };
     setLineUp(newLineUp);
     setOpen(false);
   };
 
-  let roundPredictionArray = [];
-  for (const [key, value] of Object.entries(roundPrediction)) {
-    roundPredictionArray.push({
-      'username': key,
-      'score': value,
-    });
-  }
-
   const searchedPlayers = laLigaPlayers.filter(
     (item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getPlayerImage = (index) => {
+    let image = 'https://cdn-icons-png.flaticon.com/128/3237/3237472.png';
+    const player = lineUp[index];
+    console.log(player);
+    if (player.biwengerId != null) {
+      image = 'https://cdn.biwenger.com/i/p/' + player.biwengerId + '.png';
+    }
+
+    return image;
+  }
 
   return (
     <div>
@@ -146,7 +150,7 @@ const App = () => {
                 <ListItem>
                   <ListItemAvatar>
                     <button onClick={handleOpen} className="button-avatar" type="submit">
-                      <img id={index} className="image-avatar" src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" alt="buttonpng" border="0" />
+                      <img id={index} className="image-avatar" src={getPlayerImage(index)} alt="buttonpng" border="0" />
                     </button>
                     <Modal
                       open={open}
