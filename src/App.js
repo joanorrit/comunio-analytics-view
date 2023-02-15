@@ -23,7 +23,6 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -34,27 +33,32 @@ const laLigaPlayers = [
   {
     name: 'Karim Benzema',
     biwengerId: 1027,
+    five_avg: 9,
     objectID: 0,
   },
   {
     name: 'Borja Iglesias',
     biwengerId: 2009,
     points: 5,
+    five_avg: 4,
     objectID: 1,
   },
   {
     name: 'Aleix Vidal',
     biwengerId: 1716,
+    five_avg: 2,
     objectID: 2,
   },
   {
     name: 'Carvajal',
     biwengerId: 1683,
+    five_avg: 7,
     objectID: 3,
   },
   {
     name: 'Asensio',
     biwengerId: 2081,
+    five_avg: 8,
     objectID: 10,
   },
 ];
@@ -63,8 +67,9 @@ const initialLineUp = () => {
   let lineUp = [];
   for (let i=0; i<11; i++) {
     lineUp[i] = {
-      name: 'Click image to add your player!',
+      name: 'Click image to add player!',
       biwengerId: null,
+      five_avg: 0,
     };
   }
   return lineUp;
@@ -80,6 +85,7 @@ const getAsynStories = () =>
 
 const App = () => {
   const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
+  const [points, setPoints] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [lineUp, setLineUp] = React.useState(initialLineUp());
@@ -114,11 +120,21 @@ const App = () => {
 
   const handleLineUpUpdate = (item) => {
     let newLineUp = lineUp;
+
+    let playerBeingChanged = newLineUp[currentButtonClicked];
+
+    let pointsPlayerBeingChanged = playerBeingChanged.five_avg;
+
     newLineUp[currentButtonClicked] = {
       name: item.name,
       biwengerId: item.biwengerId,
+      five_avg: item.five_avg,
     };
+
+    setPoints(points - pointsPlayerBeingChanged + item.five_avg);
+
     setLineUp(newLineUp);
+
     setOpen(false);
   };
 
@@ -129,7 +145,6 @@ const App = () => {
   const getPlayerImage = (index) => {
     let image = 'https://cdn-icons-png.flaticon.com/128/3237/3237472.png';
     const player = lineUp[index];
-    console.log(player);
     if (player.biwengerId != null) {
       image = 'https://cdn.biwenger.com/i/p/' + player.biwengerId + '.png';
     }
@@ -140,40 +155,53 @@ const App = () => {
   return (
     <div>
       <h1 className="h1-title"> Predicción Comunio </h1>
-      <Box sx={{ marginLeft: '200px', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
-        <List>
-          {
-            lineUp.map(
-              (item, index) => {
-                return (
-                <>
-                <ListItem>
-                  <ListItemAvatar>
-                    <button onClick={handleOpen} className="button-avatar" type="submit">
-                      <img id={index} className="image-avatar" src={getPlayerImage(index)} alt="buttonpng" border="0" />
-                    </button>
-                    <Modal
-                      open={open}
-                      onClose={handleClose}
-                      aria-labelledby="modal-modal-title"
-                      aria-describedby="modal-modal-description"
-                    >
-                      <Box sx={style}>
-                        <input id="search" onChange={handleSearch} type="text"/>
-                        <PlayersList list={searchedPlayers} handleLineUpUpdate={handleLineUpUpdate}/>
-                      </Box>
-                    </Modal>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={item.name}
-                  />
-                </ListItem>
-                </>
-                )
-              }
-            )
-          }
-        </List>
+      <Box sx={{ flexGrow: 1, marginLeft: '100px', width: '100%', maxWidth: 400, bgcolor: 'background.paper' }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        spacing={6}
+      >
+        <Grid item xs={10}>
+          <List>
+            {
+              lineUp.map(
+                (item, index) => {
+                  return (
+                  <>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <button onClick={handleOpen} className="button-avatar" type="submit">
+                        <img id={index} className="image-avatar" src={getPlayerImage(index)} alt="buttonpng" border="0" />
+                      </button>
+                      <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box sx={style}>
+                          <input id="search" onChange={handleSearch} type="text"/>
+                          <PlayersList list={searchedPlayers} handleLineUpUpdate={handleLineUpUpdate}/>
+                        </Box>
+                      </Modal>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={item.name}
+                    />
+                  </ListItem>
+                  </>
+                  )
+                }
+              )
+            }
+          </List>
+        </Grid>
+        <Grid item xs={2}>
+          <span className="total-points-span">{points}</span>
+        </Grid>
+      </Grid>
       </Box>
     </div>
   );
