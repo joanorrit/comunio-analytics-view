@@ -15,7 +15,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
-const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-round-prediction/';
+const API_ENDPOINT = 'http://127.0.0.1:4000/public/get-predicted-players/';
 
 
 const style = {
@@ -29,59 +29,17 @@ const style = {
   p: 4,
 };
 
-const laLigaPlayers = [
-  {
-    name: 'Karim Benzema',
-    biwengerId: 1027,
-    five_avg: 9,
-    objectID: 0,
-  },
-  {
-    name: 'Borja Iglesias',
-    biwengerId: 2009,
-    points: 5,
-    five_avg: 4,
-    objectID: 1,
-  },
-  {
-    name: 'Aleix Vidal',
-    biwengerId: 1716,
-    five_avg: 2,
-    objectID: 2,
-  },
-  {
-    name: 'Carvajal',
-    biwengerId: 1683,
-    five_avg: 7,
-    objectID: 3,
-  },
-  {
-    name: 'Asensio',
-    biwengerId: 2081,
-    five_avg: 8,
-    objectID: 10,
-  },
-];
-
 const initialLineUp = () => {
   let lineUp = [];
   for (let i=0; i<11; i++) {
     lineUp[i] = {
       name: 'Click image to add player!',
-      biwengerId: null,
+      biwengerid: null,
       five_avg: 0,
     };
   }
   return lineUp;
 }
-
-const getAsynStories = () =>
-  new Promise((resolve) =>
-    setTimeout(
-      () => resolve({ data: { players: laLigaPlayers } }),
-      2000
-    )
-  );
 
 const App = () => {
   const [laLigaPlayers, setLaLigaPlayers] = React.useState([])
@@ -91,20 +49,11 @@ const App = () => {
   const [lineUp, setLineUp] = React.useState(initialLineUp());
   const [currentButtonClicked, setCurrentButtonClicked] = React.useState(0);
 
-  let currentRoundId = '3156';
-  
-
   React.useEffect(() => {
-    getAsynStories().then(result => {
-      setLaLigaPlayers(result.data.players);
-    })
-  }, []);
-
-  React.useEffect(() => {
-    fetch(`${API_ENDPOINT}${currentRoundId}`).
+    fetch(`${API_ENDPOINT}`).
       then((response) => response.json()).
       then(result => {
-        // setRoundPrediction(result);
+        setLaLigaPlayers(result);
     })
   }, []);
 
@@ -127,7 +76,7 @@ const App = () => {
 
     newLineUp[currentButtonClicked] = {
       name: item.name,
-      biwengerId: item.biwengerId,
+      biwengerid: item.biwengerid,
       five_avg: item.five_avg,
     };
 
@@ -145,8 +94,8 @@ const App = () => {
   const getPlayerImage = (index) => {
     let image = 'https://cdn-icons-png.flaticon.com/128/3237/3237472.png';
     const player = lineUp[index];
-    if (player.biwengerId != null) {
-      image = 'https://cdn.biwenger.com/i/p/' + player.biwengerId + '.png';
+    if (player.biwengerid != null) {
+      image = 'https://cdn.biwenger.com/i/p/' + player.biwengerid + '.png';
     }
 
     return image;
@@ -210,7 +159,7 @@ const App = () => {
 const PlayersList = (props) => {
   return (  
     <ul>
-      {props.list.map(
+      {props.list.slice(0,10).map(
         (item) => <Item key={item.objectID} item={item} lineUpPosition={props.lineUpPosition} handleLineUpUpdate={props.handleLineUpUpdate}/>
         )
       }
